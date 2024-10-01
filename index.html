@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Coopr Games - Blog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tiny5:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: black; 
+      color: white;
+      font-family: 'Tiny5', sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center; 
+    }
+
+    .container {
+      display: flex;
+      justify-content: center; 
+      margin: 20px;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      width: 90%; 
+    }
+
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative; 
+      width: 100%; 
+      text-align: center; 
+    }
+
+    .blog-post {
+      padding: 20px;
+      border: 3px solid white;
+      border-radius: 10px;
+      background-color: #181818; 
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 20px;
+      position: relative; 
+      overflow: hidden;
+      display: inline-block; 
+    }
+
+    .blog-post:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .blog-post h2 {
+      margin-top: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .blog-post p {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .blog-post .date {
+      color: #888;
+      font-size: 16px;
+    }
+
+    .blog-post .content {
+      max-height: 100px;
+      overflow: hidden;
+      transition: max-height 0.3s ease; 
+    }
+
+    .blog-post.expanded .content {
+      max-height: none; 
+    }
+
+    .blog-post .footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .blog-post .footer .author,
+    .blog-post .footer .date {
+      color: #FFF;
+    }
+
+    .blog-post .footer .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .blog-post .footer .tag {
+      background-color: #00FF99; 
+      padding: 4px 8px;
+      border-radius: 5px;
+      color: black;
+      font-weight: bold;
+    }
+
+    /* Dynamic Tag Colors */
+    .blog-post .footer .tag.yellow {
+      background-color: yellow;
+    }
+
+    .blog-post .footer .tag.green {
+      background-color: #00FF99;
+    }
+
+    .blog-post .footer .tag.blue {
+      background-color: blue;
+    }
+
+    .blog-post .footer .tag.pink {
+      background-color: pink;
+    }
+
+    /* "See More" Button */
+    .blog-post .see-more,
+    .blog-post .see-less {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #00FF99;
+      color: black;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: 'Tiny5', sans-serif;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      z-index: 1; 
+      opacity: 0; 
+      visibility: hidden; 
+    }
+
+    .blog-post:hover .see-more {
+      opacity: 1; 
+      visibility: visible; 
+    }
+
+    .blog-post.expanded .see-more {
+      opacity: 0; 
+      visibility: hidden;
+    }
+
+    /* "See Less" Button */
+    .blog-post .see-less {
+      opacity: 0; 
+      visibility: hidden; 
+    }
+
+    .blog-post.expanded .see-less {
+      opacity: 1; 
+      visibility: visible; 
+    }
+
+    .blog-post:hover .see-less {
+      opacity: 1; 
+      visibility: visible; 
+    }
+
+    /* Color Cycling for Blog Posts */
+    .blog-post:nth-child(odd) {
+      background: linear-gradient(
+        to right,
+        rgba(0, 255, 153, 0.5), 
+        rgba(0, 255, 153, 0.2)
+      ); 
+    }
+
+    .blog-post:nth-child(even) {
+      background: linear-gradient(
+        to right,
+        rgba(0, 255, 153, 0.2),
+        rgba(0, 255, 153, 0.5)
+      ); 
+    }
+
+    /* Striped Shadow */
+    .blog-post::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 20px; 
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(0, 255, 153, 0.5), 
+        rgba(0, 255, 153, 0.5) 10px,
+        transparent 10px,
+        transparent 20px
+      );
+      z-index: -1;
+      filter: blur(5px);
+    }
+
+    /* Banner */
+    .banner {
+      background-image: url("https://i.imgur.com/iB1xtnD.png");
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
+      margin-bottom: 20px;
+    }
+
+    .banner::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 1)
+      );
+      pointer-events: none; 
+    }
+
+    .banner h1 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      z-index: 1; 
+    }
+
+    .banner::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 1),
+        rgba(0, 0, 0, 0)
+      );
+      pointer-events: none; 
+    }
+
+    .banner h1 {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      z-index: 1; 
+    }
+
+    .banner h1::after {
+      content: 'Coopr Games';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 48px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      color: white;
+    }
+
+    /* Text Fade */
+    .blog-post .content p {
+      transition: opacity 0.3s ease; 
+    }
+
+    .blog-post .content p:not(.expanded) {
+      opacity: 1; 
+    }
+
+    .blog-post:not(.expanded) .content p {
+      opacity: 0.5; 
+    }
+
+    .blog-post.expanded .content p {
+      opacity: 1; 
+    }
+
+    .see-more,
+    .see-less {
+      display: inline-block; 
+    }
+
+    .blog-post .see-more {
+      display: inline-block;
+    }
+
+    /* That's All! */
+    .thats-all {
+      color: gray;
+      margin-top: 20px;
+      text-align: center; 
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .box {
+        width: 100%;
+      }
+
+      .column {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .banner {
+        padding-bottom: 112.5%; /* Adjust for mobile aspect ratio */
+      }
+
+      .blog-post {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="banner">
+    
+  </div>
+
+  <div class="container">
+    <div class="column">
+      <div class="blog-post">
+        <h2>Welcome!!!</h2>
+        <p class="date">October 1, 2024</p>
+        <div class="content">
+          <p>Welcome to my Blog page! Here I will post about different cool stuff going on in my business life, so stay tuned!</p>
+          <p>Right now I have some cool stuff to post.</p>
+          <p>First of all, CatFight.me has been going great! I have been mostly consistent with updates, and have made a lot of progress. So far, I'm expecting the game to be done by the end of October! I hope you are as excited as I am. I have put a lot into CatFight so far, and it would be really sad to see all of that just go.</p>
+          <p>Thanks for reading I guess! I have a lot planned for CatFight and my new personal website.. the one you're at now!</p>
+        </div>
+        <button class="see-more">See More</button>
+        <button class="see-less">See Less</button>
+        <div class="footer">
+          <div class="author">By coopaah</div>
+          <div class="tags">
+            <div class="tag yellow">Games</div>
+            <div class="tag green">Development</div>
+            <div class="tag blue">Personal</div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+  </div>
+
+  <div class="thats-all">That's all!</div>
+
+  <script>
+    const seeMoreButtons = document.querySelectorAll('.see-more');
+    const seeLessButtons = document.querySelectorAll('.see-less');
+
+    seeMoreButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const blogPost = button.closest('.blog-post');
+        blogPost.classList.add('expanded');
+        blogPost.querySelector('.see-less').style.display = 'block';
+        blogPost.querySelector('.see-more').style.display = 'none';
+      });
+    });
+
+    seeLessButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const blogPost = button.closest('.blog-post');
+        blogPost.classList.remove('expanded');
+        blogPost.querySelector('.see-less').style.display = 'none';
+        blogPost.querySelector('.see-more').style.display = 'block';
+      });
+    });
+  </script>
+
+</body>
+</html>
